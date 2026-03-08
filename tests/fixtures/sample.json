@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Introduction to RAG",
+    "content": "Retrieval-Augmented Generation combines search with language models."
+  },
+  {
+    "id": 2,
+    "title": "Vector Databases",
+    "content": "Vector databases store embeddings for efficient similarity search."
+  },
+  {
+    "id": 3,
+    "title": "Embedding Models",
+    "content": "Models like nomic-embed-text convert text into numerical vectors."
+  }
+]

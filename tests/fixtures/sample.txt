@@ -1,0 +1,5 @@
+The quick brown fox jumps over the lazy dog.
+This is a sample text file used for testing the RAG ingestion pipeline.
+It contains multiple sentences to ensure proper text extraction.
+Vector databases are useful for semantic search applications.
+Embeddings represent text as high-dimensional numerical vectors.
