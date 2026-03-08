@@ -1,3 +1,5 @@
+from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from shared.config import settings
@@ -14,8 +16,11 @@ async def get_session() -> AsyncSession:
 async def init_db():
     from shared.models import Base
 
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+    except IntegrityError:
+        pass
+
     async with engine.begin() as conn:
-        await conn.execute(
-            __import__("sqlalchemy").text("CREATE EXTENSION IF NOT EXISTS vector")
-        )
         await conn.run_sync(Base.metadata.create_all)

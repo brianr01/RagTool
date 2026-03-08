@@ -13,3 +13,5 @@ data/*
 !data/jobs/.gitkeep
 .venv/
 *.db
+tests/fixtures/*.pdf
+tests/fixtures/*.docx

@@ -151,10 +151,32 @@ class TestEndToEnd:
         shutil.copy(FIXTURES_DIR / "sample.md", test_dir / "multi.md")
         shutil.copy(FIXTURES_DIR / "sample.csv", test_dir / "multi.csv")
         shutil.copy(FIXTURES_DIR / "sample.json", test_dir / "multi.json")
+        shutil.copy(FIXTURES_DIR / "sample.pdf", test_dir / "multi.pdf")
+        shutil.copy(FIXTURES_DIR / "sample.docx", test_dir / "multi.docx")
 
         trigger_resync()
         data = wait_for_ingestion()
 
         e2e_col = [c for c in data.get("collections", []) if c["collection"] == "e2e_code"]
         assert len(e2e_col) == 1
-        assert e2e_col[0]["documents"] >= 4
+        assert e2e_col[0]["documents"] >= 6
+
+    def test_large_pdf_ingestion(self):
+        """A very long PDF (100 pages) is fully ingested without errors."""
+        test_dir = DATA_DIR / "e2e_code"
+        test_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy(FIXTURES_DIR / "large.pdf", test_dir / "large.pdf")
+
+        trigger_resync()
+        data = wait_for_ingestion(timeout=120)
+
+        # Verify no errors
+        counts = data.get("status_counts", {})
+        assert counts.get("error", 0) == 0
+
+        # Verify the document was ingested with many chunks (one per page)
+        resp = httpx.get(f"{INGEST_URL}/status", timeout=5)
+        status = resp.json()
+        e2e_col = [c for c in status.get("collections", []) if c["collection"] == "e2e_code"]
+        assert len(e2e_col) == 1
+        assert e2e_col[0]["chunks"] >= 100

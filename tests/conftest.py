@@ -37,6 +37,15 @@ async def db_session(db_engine):
         await session.rollback()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def generate_binary_fixtures():
+    """Generate binary fixtures (PDF, DOCX) that can't be stored as plain text."""
+    import subprocess
+    import sys
+    script = Path(__file__).parent / "create_fixtures.py"
+    subprocess.run([sys.executable, str(script)], check=True)
+
+
 @pytest.fixture
 def fixtures_dir():
     return FIXTURES_DIR
